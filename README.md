@@ -24,7 +24,7 @@ You can install this plugin directly from this Git repository into your InvenTre
 If you are using Docker, you can add the following line to your `plugins.txt` file located in the InvenTree data directory:
 
 ```
-inventree-category-exporter@git+https://github.com/YourUsername/inventree-category-exporter.git
+inventree-category-exporter@git+https://github.com/CezarZcezar/inventree-category-exporter.git
 ```
 
 Then, restart your containers:
