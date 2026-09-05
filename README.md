@@ -14,7 +14,7 @@ You can install this plugin directly from this Git repository into your InvenTre
 
 1. Go to the **System Settings** -> **Plugins** page in your InvenTree admin panel.
 2. Click on the **Install Plugin** button.
-3. In the "Package Name or URL" field, enter the Git URL for this repository (e.g., `git+https://github.com/YourUsername/inventree-category-exporter.git`).
+3. In the "Package Name or URL" field, enter the Git URL for this repository (e.g., `git+https://github.com/CezarZcezar/inventree-category-exporter.git`).
 4. Click **Install**.
 5. Restart your InvenTree server worker to load the new plugin.
 6. Once restarted, go back to **System Settings** -> **Plugins** and ensure the **Category Exporter** plugin is checked/enabled.

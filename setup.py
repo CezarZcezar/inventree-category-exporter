@@ -11,7 +11,7 @@ setuptools.setup(
     description="An InvenTree plugin to export Part Categories to CSV, XLSX, and Tree formats.",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/YourUsername/inventree-category-exporter",
+    url="https://github.com/CezarZcezar/inventree-category-exporter",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
