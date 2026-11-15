@@ -10,68 +10,63 @@ A custom plugin for [InvenTree](https://inventree.org) that allows you to easily
 
 ## Features
 
-- **CSV Export:** Download the entire category tree as a CSV file, including ID, Name, Category Path string, Hierarchy Level, and Description.
-- **XLSX Export:** Download the category tree as a Microsoft Excel spreadsheet.
-- **Tree Export:** Download a visual Unicode/ASCII text representation showing the hierarchical tree structure (using `├──` and `└──`).
-- **Web UI & Direct Endpoints:** Download directly through the interactive web view (`/plugin/category_exporter/`) or script downloads via dedicated REST-like download URLs.
-- **Automated Tests:** Includes a dedicated test suite with 100% isolated unit tests covering tree construction, datasets, and HTTP responses.
+- **Panel in the Parts page:** a *Categories Tree* panel is shown in the left-hand panel list of the Parts page (next to *Part Categories* and *Parts*) and on every part category page. It displays the category tree as text (with a copy button) and offers the downloads.
+- **Sub-tree export:** on a category page you can export only that category and its subcategories, or all categories.
+- **CSV / XLSX export** with the same information as the category table in InvenTree:
+  ID, Name, Path, Level, Description, Parent Category (ID), Default Location, Parent Default Location,
+  Default Keywords, Parts (including subcategories), Subcategories (all levels), Structural,
+  Starred (by the user who downloads the file) and Icon. Locations are written as their full path.
+  Values which a spreadsheet would run as a formula (`=`, `+`, `-`, `@`) are prefixed with `'`.
+- **Tree export:** a text tree like the Linux `tree` command (`├──`, `└──`).
+- **Permissions:** you must be logged in and have the *Part Categories: View* role.
+
+Requires InvenTree 1.0+ (React UI) with **Settings → Plugins → Enable interface integration** and **Enable URL integration** turned on.
 
 ---
 
 ## Installation
 
-### Method 1: Local Docker Volume (Recommended)
+### Local Docker deployment
 
-InvenTree Docker instances automatically load plugins located in the persistent data volume:
+```bash
+./deploy.sh            # copies the plugin to ../inventree-data/plugins/category_exporter and restarts InvenTree
+```
 
-1. Copy the plugin files into your `inventree-data/plugins/` directory:
-   ```bash
-   mkdir -p inventree-data/plugins/category_exporter
-   cp -r inventree-category-exporter/inventree_category_exporter/* inventree-data/plugins/category_exporter/
-   ```
+### Via Git / `plugins.txt`
 
-2. Restart your InvenTree containers:
-   ```bash
-   docker compose restart inventree-server inventree-worker
-   ```
-
-### Method 2: Via Git / `plugins.txt`
-
-Add the Git repository URL to your `inventree-data/plugins.txt`:
 ```
 inventree-category-exporter@git+https://github.com/CezarZcezar/inventree-category-exporter.git
 ```
 
-Then reload plugins in InvenTree.
+Then activate the plugin under **Settings → Plugins**.
 
 ---
 
 ## Usage
 
-Once the plugin is installed and active:
+Open **Parts** and select the **Categories Tree** panel. The tree is shown right away; use the CSV / XLSX / TXT buttons to download it.
 
-1. Open your browser and navigate to:
-   ```
-   http://<your-inventree-url>/plugin/category_exporter/
-   ```
-2. You will see the Category Exporter interface with three download buttons:
-   - **Download CSV** (`/plugin/category_exporter/export/csv/`)
-   - **Download XLSX** (`/plugin/category_exporter/export/xlsx/`)
-   - **Download Tree (TXT)** (`/plugin/category_exporter/export/tree/`)
-3. Click any button to download the category tree file.
+The downloads can also be used directly (for scripts):
+
+| URL | Result |
+|-----|--------|
+| `/plugin/category_exporter/export/csv/` | CSV |
+| `/plugin/category_exporter/export/xlsx/` | XLSX |
+| `/plugin/category_exporter/export/tree/` | text tree (download) |
+| `/plugin/category_exporter/tree/` | text tree (inline, used by the panel) |
+
+Add `?category=<id>` to export only one category and its subcategories.
+`/plugin/category_exporter/` still shows a simple standalone page with the links.
 
 ---
 
-## Automated Tests
+## Tests
 
-The plugin includes isolated unit tests that verify tree recursion, tablib dataset building, HTTP response headers, and view endpoints without touching the database:
+The export logic has no InvenTree dependency and is tested on its own:
 
 ```bash
-# Run tests inside the Docker container
-docker exec -e PYTHONPATH=/home/inventree/data/plugins/category_exporter inventree-server python3 -m unittest discover -s /home/inventree/data/plugins/category_exporter/tests
+python -m unittest discover -s tests -v
 ```
-
-All 11 tests run in under 0.2 seconds.
 
 ---
 
