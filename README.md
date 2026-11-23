@@ -13,7 +13,7 @@ A custom plugin for [InvenTree](https://inventree.org) that allows you to easily
 - **Panel in the Parts page:** a *Categories Tree* panel is shown in the left-hand panel list of the Parts page (next to *Part Categories* and *Parts*) and on every part category page. It displays the category tree as text (with a copy button) and offers the downloads.
 - **Sub-tree export:** on a category page you can export only that category and its subcategories, or all categories.
 - **CSV / XLSX export** with the same information as the category table in InvenTree:
-  ID, Name, Path, Level, Description, Parent Category (ID), Default Location, Parent Default Location,
+  ID, Name, Path, Level, Description, Parent Category (ID), Parent Name, Default Location, Parent Default Location,
   Default Keywords, Parts (including subcategories), Subcategories (all levels), Structural,
   Starred (by the user who downloads the file) and Icon. Locations are written as their full path.
   Values which a spreadsheet would run as a formula (`=`, `+`, `-`, `@`) are prefixed with `'`.

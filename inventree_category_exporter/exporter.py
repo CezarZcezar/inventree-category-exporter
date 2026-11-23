@@ -17,6 +17,7 @@ HEADERS = [
     'Level',
     'Description',
     'Parent Category',
+    'Parent Name',
     'Default Location',
     'Parent Default Location',
     'Default Keywords',
@@ -39,16 +40,26 @@ def sanitize_cell(value):
     return value
 
 
-def category_rows(categories: Iterable, locations: dict | None = None, starred: set | None = None) -> list[list]:
+def category_rows(
+    categories: Iterable,
+    locations: dict | None = None,
+    starred: set | None = None,
+    parent_names: dict | None = None,
+) -> list[list]:
     """Return one row per category, matching HEADERS.
 
     Arguments:
         categories: Annotated categories
         locations: Map of stock location pk -> location path (for the location columns)
         starred: Set of category pks starred by the current user
+        parent_names: Map of category pk -> name for parents which are not exported
+            (e.g. the parent of the selected category in a sub-tree export)
     """
+    categories = list(categories)
     locations = locations or {}
     starred = starred or set()
+    names = dict(parent_names or {})
+    names.update((category.pk, category.name) for category in categories)
 
     def location(pk):
         return sanitize_cell(locations.get(pk, '')) if pk else ''
@@ -61,6 +72,7 @@ def category_rows(categories: Iterable, locations: dict | None = None, starred: 
             category.level,
             sanitize_cell(category.description or ''),
             category.parent_id or '',
+            sanitize_cell(names.get(category.parent_id, '')) if category.parent_id else '',
             location(category.default_location_id),
             location(category.parent_default_location),
             sanitize_cell(category.default_keywords or ''),
@@ -74,13 +86,18 @@ def category_rows(categories: Iterable, locations: dict | None = None, starred: 
     ]
 
 
-def build_dataset(categories: Iterable, locations: dict | None = None, starred: set | None = None):
+def build_dataset(
+    categories: Iterable,
+    locations: dict | None = None,
+    starred: set | None = None,
+    parent_names: dict | None = None,
+):
     """Return a tablib Dataset with the category rows."""
     import tablib
 
     dataset = tablib.Dataset(headers=HEADERS, title='Categories')
 
-    for row in category_rows(categories, locations, starred):
+    for row in category_rows(categories, locations, starred, parent_names):
         dataset.append(row)
 
     return dataset

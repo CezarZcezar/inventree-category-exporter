@@ -82,16 +82,22 @@ class RowTests(unittest.TestCase):
                 default_keywords='elec', part_count=7, subcategories=1, structural=True, icon='ti:cpu:outline'),
             cat(2, 'Resistors', 1, 'Electronics/Resistors', 1, None, parent_default_location=10, part_count=5),
         ], locations={10: 'Warehouse/Shelf A'}, starred={2})
-        self.assertEqual(len(HEADERS), 14)
+        self.assertEqual(len(HEADERS), 15)
         self.assertTrue(all(len(row) == len(HEADERS) for row in rows))
         self.assertEqual(rows[0], [
-            1, 'Electronics', 'Electronics', 0, 'All electronics', '', 'Warehouse/Shelf A', '', 'elec',
+            1, 'Electronics', 'Electronics', 0, 'All electronics', '', '', 'Warehouse/Shelf A', '', 'elec',
             7, 1, True, False, 'ti:cpu:outline',
         ])
         self.assertEqual(rows[1], [
-            2, 'Resistors', 'Electronics/Resistors', 1, '', 1, '', 'Warehouse/Shelf A', '',
+            2, 'Resistors', 'Electronics/Resistors', 1, '', 1, 'Electronics', '', 'Warehouse/Shelf A', '',
             5, 0, False, True, '',
         ])
+
+    def test_parent_name_outside_export(self):
+        """Sub-tree export: the parent of the selected category comes from parent_names."""
+        rows = category_rows([cat(2, 'Resistors', 1), cat(3, 'SMD', 2)], parent_names={1: 'Electronics'})
+        column = HEADERS.index('Parent Name')
+        self.assertEqual([row[column] for row in rows], ['Electronics', 'Resistors'])
 
     def test_unknown_location_is_empty(self):
         row = category_rows([cat(1, 'A', default_location_id=99)])[0]

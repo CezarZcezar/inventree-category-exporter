@@ -66,6 +66,19 @@ def get_location_paths(categories) -> dict:
     return dict(StockLocation.objects.filter(pk__in=ids).values_list('pk', 'pathstring'))
 
 
+def get_parent_names(categories) -> dict:
+    """Map pk -> name of parents which are not in the exported list (one query, sub-tree exports)."""
+    from part.models import PartCategory
+
+    known = {category.pk for category in categories}
+    ids = {category.parent_id for category in categories if category.parent_id and category.parent_id not in known}
+
+    if not ids:
+        return {}
+
+    return dict(PartCategory.objects.filter(pk__in=ids).values_list('pk', 'name'))
+
+
 def get_starred(user) -> set:
     """Return the pks of the categories directly starred by the user."""
     return set(user.starred_categories.values_list('category_id', flat=True))
@@ -94,7 +107,9 @@ def export_view(request, fmt: str):
         content = build_category_tree(categories) + '\n'
         filename = export_filename(extension, '_tree')
     else:
-        dataset = build_dataset(categories, get_location_paths(categories), get_starred(request.user))
+        dataset = build_dataset(
+            categories, get_location_paths(categories), get_starred(request.user), get_parent_names(categories)
+        )
         content = dataset.export(fmt)
         filename = export_filename(extension)
 
